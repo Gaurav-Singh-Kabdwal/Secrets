@@ -1,0 +1,51 @@
+<%- include('partials/header') %>
+
+  <div class="container mt-5 centered x">
+    <i class="fas fa-key fa-6x"></i>
+    <h1 class="h t">LOGIN</h1>
+    <div class="col-sm-8 col-md-6 col-lg-4 center">
+      <div class="card social-block">
+        <div class="card-body">
+          <a class="btn btn-block btn-social btn-google" href="/auth/google" role="button">
+            <i class="fab fa-google"></i>
+            Sign In with Google
+          </a>
+        </div>
+        <div class="card-body">
+          <a class="btn btn-block btn-social btn-facebook" href="/auth/facebook" role="button">
+            <i class="fab fa-facebook"></i>
+            Sign In with Facebook
+          </a>
+        </div>
+      </div>
+    </div>
+    <h1 class="h center">or</h1>
+    <div class="row">
+      <div class="col-sm-8 col-md-6 col-lg-4 center">
+        <div class="card center">
+          <div class="card-body">
+
+            <!-- Makes POST request to /login route -->
+            <form action="/login" method="POST">
+              <div class="form-floating i">
+                <input type="email" class="form-control" name="username" id="floatingInput"
+                  placeholder="name@example.com" required>
+                <label for="floatingInput">Email</label>
+              </div>
+              <div class="form-floating i">
+                <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="********"
+                  required>
+                <label for="floatingPassword">Password</label>
+              </div>
+              <button type="submit" class="btn btn-dark">Login</button>
+            </form>
+          </div>
+        </div>
+        <p class="i">
+          <%=ejsError%>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>

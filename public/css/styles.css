@@ -1,0 +1,39 @@
+
+body {
+  background-color: #E8ECEF;
+}
+
+.centered.x{
+    padding: 1rem 0;
+    text-align: center;
+}
+
+.centered {
+  padding: 10rem 0;
+  text-align: center;
+}
+
+.center {
+    margin: 0 auto;
+}
+
+.t {
+    margin-bottom: 3rem;
+    font-weight: 900;
+}
+
+
+.h {
+  margin-bottom: 1rem;
+}
+
+.i {
+    margin: 1rem 0;
+}
+
+.secret-text {
+  text-align: center;
+  font-size: 2rem;
+  color: #fff;
+  background-color: #000;
+}
