@@ -21,9 +21,10 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }));
-
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.enable('trust proxy');
 
 mongoose.connect(process.env.URL);
 
@@ -87,9 +88,9 @@ passport.use(new FacebookStrategy({
 },
     async function (accessToken, refreshToken, profile, done) {
         try {
-            console.log(profile);
             // Find or create user in your database
             let user = await User.findOne({ facebookId: profile.id });
+            console.log(user);
             if (user === null) {
                 // Create new user in database
                 const username = Array.isArray(profile.emails) && profile.emails.length > 0 ? profile.emails[0].value.split('@')[0] : '';
