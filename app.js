@@ -19,7 +19,7 @@ app.use(express.static("public"));
 app.use(session({
     secret: process.env.SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: false
 }));
 
 app.use(passport.initialize());
@@ -58,7 +58,7 @@ passport.deserializeUser(function (user, cb) {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.CALLBACK_URL
+    callbackURL: process.env.GOOGLE_CALLBACK_URL
 },
     async function (accessToken, refreshToken, profile, done) {
         try {
@@ -83,13 +83,13 @@ passport.use(new GoogleStrategy({
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: process.env.CALLBACK_URL
+    callbackURL: process.env.FACEBOOK_CALLBACK_URL
 },
     async function (accessToken, refreshToken, profile, done) {
         try {
             console.log(profile);
             // Find or create user in your database
-            let user = await User.findOne({ googleId: profile.id });
+            let user = await User.findOne({ facebookId: profile.id });
             if (user === null) {
                 // Create new user in database
                 const username = Array.isArray(profile.emails) && profile.emails.length > 0 ? profile.emails[0].value.split('@')[0] : '';
@@ -142,7 +142,8 @@ app.get("/secrets", async (req, res) => {
     res.render("secrets", { ejsUsers: users });
 });
 
-app.get("/submit", async (req, res) => {
+app.get("/submit", (req, res) => {
+    console.log(req.isAuthenticated());
     if (req.isAuthenticated()) {
         res.render("submit");
     }
@@ -151,14 +152,14 @@ app.get("/submit", async (req, res) => {
     }
 });
 
-app.post("/register", async (req, res) => {
+app.post("/register", (req, res) => {
 
-    User.register({ username: req.body.username }, req.body.password, function (err, user) {
+    User.register({ username: req.body.username }, req.body.password, async (err, user) => {
         if (err !== null) {
             console.log(err);
             res.render("register", { ejsError: "Email already registered" });
         } else {
-            passport.authenticate("local")(req, res, function () {
+            await passport.authenticate("local")(req, res, function () {
                 res.redirect("/secrets");
             });
         }
@@ -173,11 +174,12 @@ app.post("/login", (req, res) => {
         password: req.body.password
     });
 
-    req.login(user, function (err) {
-        if (err !== null) {
+    req.login(user, async function (err) {
+        if (err !== undefined) {
+            console.log(err);
             res.render("login", { ejsError: "Authentication failed" });
         } else {
-            passport.authenticate("local")(req, res, function () {
+            await passport.authenticate("local")(req, res, function () {
                 res.redirect("/secrets");
             });
         }
@@ -185,11 +187,12 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/submit", async (req, res) => {
+    console.log(req.user);
     const foundUser = await User.findById(req.user.id);
     console.log(foundUser);
     if (foundUser !== null) {
         foundUser.secrets.push(req.body.secret);
-        foundUser.save();
+        await foundUser.save();
         res.redirect("/secrets");
     }
 });
